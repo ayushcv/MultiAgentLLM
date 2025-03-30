@@ -2,7 +2,12 @@
 import Foundation
 
 class OllamaService {
-    func generateStreamed(prompt: String, model: String, appendToken: @escaping (String) -> Void, completion: @escaping () -> Void) {
+    func generateStreamed(
+        prompt: String,
+        model: String,
+        appendToken: @escaping (String) -> Void,
+        completion: @escaping () -> Void
+    ) {
         guard let url = URL(string: "http://127.0.0.1:11434/api/generate") else { return }
 
         var request = URLRequest(url: url)
@@ -45,5 +50,38 @@ class OllamaService {
         }
 
         task.resume()
+    }
+
+    func fetchInstalledModels(completion: @escaping ([String]) -> Void) {
+        guard let url = URL(string: "http://127.0.0.1:11434/api/tags") else {
+            completion([])
+            return
+        }
+
+        let request = URLRequest(url: url)
+
+        URLSession.shared.dataTask(with: request) { data, _, error in
+            if let error = error {
+                print("Model fetch error:", error)
+                DispatchQueue.main.async {
+                    completion([])
+                }
+                return
+            }
+
+            guard let data = data,
+                  let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let models = json["models"] as? [[String: Any]] else {
+                DispatchQueue.main.async {
+                    completion([])
+                }
+                return
+            }
+
+            let names = models.compactMap { $0["name"] as? String }
+            DispatchQueue.main.async {
+                completion(names)
+            }
+        }.resume()
     }
 }

@@ -3,7 +3,7 @@ import Foundation
 class ChatAgent: ObservableObject, Identifiable {
     let id = UUID()
     let name: String
-    let model: String
+    @Published var model: String
     let systemPrompt: String
     @Published var history: [Message] = []
 
@@ -13,3 +13,4 @@ class ChatAgent: ObservableObject, Identifiable {
         self.systemPrompt = systemPrompt
     }
 }
+
