@@ -3,7 +3,7 @@ import Foundation
 
 class OllamaService {
     func generateStreamed(prompt: String, model: String, appendToken: @escaping (String) -> Void, completion: @escaping () -> Void) {
-        guard let url = URL(string: "http://localhost:11434/api/generate") else { return }
+        guard let url = URL(string: "http://127.0.0.1:11434/api/generate") else { return }
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
