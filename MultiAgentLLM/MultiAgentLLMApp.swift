@@ -11,7 +11,8 @@ import SwiftUI
 struct MultiAgentLLMApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            //ContentView()
+            AgentModelSelectorView()
         }
     }
 }
