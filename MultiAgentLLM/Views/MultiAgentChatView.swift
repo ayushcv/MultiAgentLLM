@@ -1,3 +1,5 @@
+//MultiAgentChatView.swift
+
 import SwiftUI
 
 struct LLMRoleAgent: Identifiable {
@@ -14,6 +16,7 @@ struct MultiAgentChatView: View {
     @State private var prompt: String = ""
     @State private var chatLog: [Message] = []
     @State private var isStreaming = false
+    @State private var llmAgents: [LLMRoleAgent] = []
 
     let ollama = OllamaService()
 
@@ -57,6 +60,13 @@ struct MultiAgentChatView: View {
             }
             .padding()
         }
+        .onAppear {
+            if llmAgents.isEmpty {
+                llmAgents = agents.map { agent in
+                    LLMRoleAgent(role: agent.role, model: agent.selectedModel)
+                }
+            }
+        }
     }
 
     func sendPrompt() {
@@ -65,11 +75,6 @@ struct MultiAgentChatView: View {
 
         let userMessage = Message(role: "User", content: prompt)
         chatLog.append(userMessage)
-
-        // Convert AgentRoleSelection into LLMRoleAgent with model access
-        let llmAgents = agents.map { agent in
-            LLMRoleAgent(role: agent.role, model: agent.selectedModel)
-        }
 
         guard let host = llmAgents.first(where: { $0.role.lowercased() == "host" }) else {
             print("❌ No host agent found")
